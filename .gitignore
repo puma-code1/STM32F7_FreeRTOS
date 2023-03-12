@@ -1,0 +1,6 @@
+*.ld
+*.md
+*.launch
+FreeRTOS-Queues/Debug/*
+FreeRTOS-Tasks/Debug/*
+.metadata/*
