@@ -54,6 +54,10 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* USER CODE BEGIN PV */
 
+TaskHandle_t receive_uart_task_handle;
+TaskHandle_t send_uart_task_handle;
+QueueHandle_t xQueue1 ;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,7 +67,6 @@ static void MX_USART3_UART_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
-
 
 
 /* USER CODE END PFP */
@@ -123,7 +126,11 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
-  QueueHandle_t xQueue1 = xQueueCreate( 5, sizeof(uint32_t));
+     xQueue1 = xQueueCreate( 5, sizeof(uint32_t));
+	 if(xQueue1 == 0 )
+  {
+	  Error_Handler();
+  }
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -132,6 +139,23 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+
+
+
+	  if( xTaskCreate(rcv_task,"receive_uart_task",1000,0, 1, &receive_uart_task_handle) != pdPASS)
+	   {
+	 	  // add an error msg
+		  Error_Handler();
+	   }
+
+	  if( xTaskCreate(msg_parser,"handler_uart_parser",1000,0,1, &send_uart_task_handle) != pdPASS)
+	 	   {
+	 	 	  // add an error msg
+		  Error_Handler();
+	 	   }
+
+
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -262,10 +286,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LD1_Pin|LD2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Green_LED_Pin|Blue_LED_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : LD1_Pin LD2_Pin */
-  GPIO_InitStruct.Pin = LD1_Pin|LD2_Pin;
+  /*Configure GPIO pins : Green_LED_Pin Blue_LED_Pin */
+  GPIO_InitStruct.Pin = Green_LED_Pin|Blue_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
