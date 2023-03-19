@@ -14,7 +14,7 @@ uint32_t  address_input_buffer;
 uint8_t parsing_buffer[10]= {0};
 
 
-
+extern struct netif gnetif;
 
  static Queue_buffer queue_buffers_array[QUEUE_BUFFER_DEPTH];
 
